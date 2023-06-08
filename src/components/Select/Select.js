@@ -1,81 +1,71 @@
-import React from "react";
-import styled from "styled-components";
+import React from 'react';
+import styled from 'styled-components';
 
-import { COLORS } from "../../constants";
-import Icon from "../Icon";
-import { getDisplayedValue } from "./Select.helpers";
+import { COLORS } from '../../constants';
+import Icon from '../Icon';
+import { getDisplayedValue } from './Select.helpers';
 
-const SelectWrapper = styled.select`
-  background: ${COLORS.transparentGray15};
-  border-radius: 8px;
-  color: ${COLORS.gray700};
-  top: 0;
-  left: 0;
-  appearance: none;
-  z-index: 100;
-  opacity: 0;
-  position: absolute;
-
-  &:hover {
-    color: black;
-  }
-
-  &:focus {
-    border: 2px solid purple;
-  }
-`;
-
-const DisplayedElementWrapper = styled.div`
-  position: absolute;
-  z-index: 0;
-
-`;
-
-const DisplayedSelect = styled.div`
-  position: ;
-  display: flex;
-  background: ${COLORS.transparentGray15};
-  border-radius: 8px;
-  color: ${COLORS.gray700};
-  top: 0;
-  left: 0;
-  position: absolute;
-  z-index: 50;
-  width: max-content;
-  align-items: center;
-  padding: 12px;
-
-  svg {
-    margin-left: 24px;
-  }
-
-  &:hover {
-    color: black;
-  }
-
-  &:focus {
-    border: 2px solid purple;
-    color: red;
-  }
-`
-
-const Select = ({ label, value, onChange, children }) => {
+const Select = ({ id, value, onChange, children }) => {
   const displayedValue = getDisplayedValue(value, children);
+
   return (
-    <DisplayedElementWrapper>
-      <SelectWrapper
-        value={value}
-        onChange={onChange}
-        style={{
-          "--width": displayedValue.length + "px",
-        }}
-      >
+    <Wrapper>
+      <NativeSelect id={id} value={value} onChange={onChange}>
         {children}
-      </SelectWrapper>
-      <DisplayedSelect>{displayedValue}<Icon id="chevron-down" size={24} strokeWidth={1} onChange={onChange} /></DisplayedSelect>
-      
-    </DisplayedElementWrapper>
+      </NativeSelect>
+      <PresentationalBit>
+        {displayedValue}
+        <IconWrapper style={{ '--size': 24 + 'px' }}>
+          <Icon id="chevron-down" strokeWidth={1} size={24} />
+        </IconWrapper>
+      </PresentationalBit>
+    </Wrapper>
   );
 };
+
+const Wrapper = styled.div`
+  position: relative;
+  width: max-content;
+`;
+
+const NativeSelect = styled.select`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  /* Allow the select to span the full height in Safari */
+  -webkit-appearance: none;
+`;
+
+const PresentationalBit = styled.div`
+  color: ${COLORS.gray700};
+  background-color: ${COLORS.transparentGray15};
+  font-size: ${16 / 16}rem;
+  padding: 12px 16px;
+  padding-right: 52px;
+  border-radius: 8px;
+
+  ${NativeSelect}:focus + & {
+    outline: 1px dotted #212121;
+    outline: 5px auto -webkit-focus-ring-color;
+  }
+
+  ${NativeSelect}:hover + & {
+    color: ${COLORS.black};
+  }
+`;
+
+const IconWrapper = styled.div`
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 10px;
+  margin: auto;
+  width: var(--size);
+  height: var(--size);
+  pointer-events: none;
+`;
 
 export default Select;
